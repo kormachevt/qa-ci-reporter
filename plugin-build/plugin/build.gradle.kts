@@ -7,9 +7,16 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
+    implementation("org.openmbee.testrail:testrail-cli:1.0.0")
 
     testImplementation(TestingLib.JUNIT)
 }
+
+//repositories {
+//    flatDir {
+//        dirs("lib")
+//    }
+//}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
