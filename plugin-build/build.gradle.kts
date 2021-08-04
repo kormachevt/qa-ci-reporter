@@ -31,7 +31,7 @@ allprojects {
         ignoreFailures.set(false)
         enableExperimentalRules.set(true)
         filter {
-            exclude("**/generated/**")
+            exclude("**/generated/**", "**/lib/**")
             include("**/kotlin/**")
         }
     }
