@@ -5,6 +5,7 @@ import khttp.get
 import khttp.post
 import khttp.responses.Response
 import khttp.structures.cookie.CookieJar
+import org.apache.http.HttpStatus
 import org.gradle.api.DefaultTask
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.provider.Property
@@ -16,9 +17,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 abstract class ReportToAllureServerTask : DefaultTask() {
+    private val defaultBatchSize: String = "300"
 
     init {
         description = "Send report to the Allure Report Server"
@@ -62,6 +65,11 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     abstract val trigger: Property<String>
 
     @get:Input
+    @get:Option(option = "batch-size", description = "Number of files in a batch for upload")
+    @get:Optional
+    abstract val batch: Property<String>
+
+    @get:Input
     @get:Option(option = "telegram-bot-token", description = "Telegram Bot token for sending notification")
     abstract val telegramBotToken: Property<String>
 
@@ -90,7 +98,7 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         return response
     }
 
-    private fun cleanResults(projectId: String, csrf: String, cookies: CookieJar): Response {
+    private fun cleanResults(projectId: String, csrf: String, cookies: CookieJar) {
         print("Cleaning results (to avoid merging of current and previous runs)")
         val response = get(
             url = "${url.get()}/allure-docker-service/clean-results",
@@ -99,23 +107,24 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             params = mapOf("project_id" to projectId)
         )
         handleError(response)
-        return response
     }
 
-    private fun sendResults(projectId: String, csrf: String, cookies: CookieJar): Response {
+    private fun sendResults(projectId: String, csrf: String, cookies: CookieJar) {
         println("Sending results")
-        val response = post(
-            url = "${url.get()}/allure-docker-service/send-results",
-            headers = mapOf("X-CSRF-TOKEN" to csrf),
-            cookies = cookies,
-            params = mapOf("project_id" to projectId),
-            json = getFilesJson()
-        )
-        handleError(response)
-        return response
+        getChunkedFileJSONs().forEach {
+            val response = post(
+                url = "${url.get()}/allure-docker-service/send-results",
+                headers = mapOf("X-CSRF-TOKEN" to csrf),
+                cookies = cookies,
+                params = mapOf("project_id" to projectId),
+                json = it
+            )
+            println("RESULT UPLOAD SC: ${response.statusCode}")
+            handleError(response)
+        }
     }
 
-    private fun generateReport(projectId: String, csrf: String, cookies: CookieJar): Response {
+    private fun generateReport(projectId: String, csrf: String, cookies: CookieJar) {
         println("Generating Report")
         val response = get(
             url = "${url.get()}/allure-docker-service/generate-report",
@@ -130,11 +139,10 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         )
         handleError(response)
         println("REPORT_URL: ${JSONObject(response.text).getJSONObject("data")["report_url"]}")
-        return response
     }
 
     private fun handleError(response: Response) {
-        if (response.statusCode != 200) {
+        if (response.statusCode != HttpStatus.SC_OK) {
             println("Status code: " + response.statusCode)
             println("Headers: " + response.headers)
             println("Response: " + response.text)
@@ -142,16 +150,24 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         }
     }
 
-    private fun getFilesJson(): JSONObject {
-        val files = File(resultsDir.get()).walk().toList().drop(1).map { it.fileLike() }
-        val results = JSONArray()
-        files.forEach {
-            val result = JSONObject()
-            result.put("file_name", it.name)
-            result.put("content_base64", convertToBase64(it.contents))
-            results.put(result)
+    private fun getChunkedFileJSONs(): List<JSONObject> {
+        val chunksOfFiles = File(resultsDir.get()).walk()
+            .toList()
+            .drop(1)
+            .map { it.fileLike() }
+            .chunked(batch.getOrElse(defaultBatchSize).toInt())
+        val resultsList = ArrayList<JSONObject>();
+        chunksOfFiles.forEach { it ->
+            val array = JSONArray()
+            it.forEach {
+                val item = JSONObject()
+                item.put("file_name", it.name)
+                item.put("content_base64", convertToBase64(it.contents))
+                array.put(item)
+            }
+            resultsList.add(JSONObject().put("results", array))
         }
-        return JSONObject().put("results", results)
+        return resultsList
     }
 
     private fun convertToBase64(attachment: ByteArray): String {
