@@ -8,15 +8,20 @@ dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
     implementation("org.openmbee.testrail:testrail-cli:1.1.2")
+    implementation("com.lordcodes.turtle:turtle:0.5.0")
+    implementation("com.github.jkcclemens:khttp:0.1.0")
 
     testImplementation(TestingLib.JUNIT)
 }
 
-//repositories {
-//    flatDir {
-//        dirs("lib")
-//    }
-//}
+repositories {
+    flatDir {
+        dirs("./src/main/java/com/tkormachev/kotlin/gradle/test/reporting/plugin/lib")
+    }
+    maven {
+        setUrl("https://jitpack.io")
+    }
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

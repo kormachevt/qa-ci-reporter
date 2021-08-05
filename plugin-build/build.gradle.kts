@@ -16,6 +16,9 @@ allprojects {
         google()
         mavenCentral()
         jcenter()
+        maven {
+            setUrl("https://jitpack.io")
+        }
     }
 
     apply {
@@ -31,7 +34,7 @@ allprojects {
         ignoreFailures.set(false)
         enableExperimentalRules.set(true)
         filter {
-            exclude("**/generated/**", "**/lib/**")
+            exclude("**/generated/**", "**/lib/**", "**/scripts/**", "**/plugin/**")
             include("**/kotlin/**")
         }
     }

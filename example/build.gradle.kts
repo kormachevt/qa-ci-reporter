@@ -1,8 +1,5 @@
 plugins {
     java
-    id("com.ncorti.kotlin.gradle.template.plugin")
-}
+    id("com.tkormachev.kotlin.gradle.test.reporting.plugin")
 
-templateExampleConfig {
-    message.set("Just trying this gradle plugin...")
 }

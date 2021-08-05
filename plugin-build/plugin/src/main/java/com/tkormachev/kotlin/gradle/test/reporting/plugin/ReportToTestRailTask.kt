@@ -1,19 +1,20 @@
-package com.ncorti.kotlin.gradle.template.plugin
+package com.tkormachev.kotlin.gradle.test.reporting.plugin
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.openmbee.testrail.cli.JUnitPublisher
 
-abstract class TestRailReportTask : DefaultTask() {
+abstract class ReportToTestRailTask : DefaultTask() {
 
     init {
         description = "Send report to the TestRail"
 
         // Don't forget to set the group here.
-        // group = BasePlugin.BUILD_GROUP
+         group = BasePlugin.BUILD_GROUP
     }
 
     @get:Input
@@ -45,7 +46,7 @@ abstract class TestRailReportTask : DefaultTask() {
     abstract val skipCloseRun: Property<Boolean>
 
     @TaskAction
-    fun sampleAction() {
+    fun publish() {
         JUnitPublisher.main(
             "-d ./build/test-results/test",
             "-h $url",
