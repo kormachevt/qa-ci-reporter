@@ -41,18 +41,22 @@ abstract class ReportToTestRailTask : DefaultTask() {
 
     @get:Input
     @get:Option(option = "skip-close-run", description = "skip-close-run")
-    abstract val skipCloseRun: Property<Boolean>
+    abstract val skipCloseRun: Property<String>
 
     @TaskAction
+    @Suppress("SpreadOperator")
     fun publish() {
-        JUnitPublisher.main(
+        val args = mutableListOf(
             "-d ./build/test-results/test",
             "-h $url",
             "-u $login",
             "-p $password",
             "-sid $suiteId",
             "--run-name \"[${env.get().toUpperCase()}] $title [${java.util.Calendar.getInstance()}]\"",
-            "--skip-close-run"
         )
+        if (skipCloseRun.getOrElse("false").toBoolean()) {
+            args.add("--skip-close-run")
+        }
+        JUnitPublisher.main(*args.toTypedArray())
     }
 }
