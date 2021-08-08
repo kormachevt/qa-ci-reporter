@@ -1,24 +1,18 @@
+import org.jetbrains.kotlin.gradle.targets.js.npm.includedRange
+
 plugins {
     kotlin("jvm")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish")
+    id ("com.github.johnrengelman.shadow") version ("7.0.0")
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
-    implementation("org.openmbee.testrail:testrail-cli:1.1.2")
-    implementation("com.lordcodes.turtle:turtle:0.5.0")
     implementation("com.github.jkcclemens:khttp:0.1.0")
-    implementation("guru.qa.allure:notifications:3.1.1")
-
+    compile(fileTree("./src/main/java/com/tkormachev/kotlin/gradle/qa/reporting/plugin/lib") { include("*.jar") })
     testImplementation(TestingLib.JUNIT)
-}
-
-repositories {
-    flatDir {
-        dirs("./src/main/java/com/tkormachev/kotlin/gradle/qa/reporting/plugin/lib")
-    }
 }
 
 java {
