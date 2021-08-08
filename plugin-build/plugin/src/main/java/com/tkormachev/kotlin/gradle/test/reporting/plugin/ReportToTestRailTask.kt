@@ -12,9 +12,7 @@ abstract class ReportToTestRailTask : DefaultTask() {
 
     init {
         description = "Send report to the TestRail"
-
-        // Don't forget to set the group here.
-         group = BasePlugin.BUILD_GROUP
+        group = BasePlugin.BUILD_GROUP
     }
 
     @get:Input

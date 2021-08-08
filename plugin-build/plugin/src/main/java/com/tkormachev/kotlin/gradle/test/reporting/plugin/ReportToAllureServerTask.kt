@@ -22,6 +22,11 @@ import kotlin.collections.ArrayList
 
 abstract class ReportToAllureServerTask : DefaultTask() {
     private val defaultBatchSize: String = "300"
+    private val telegramConfigTokenPlaceholder: String = "__TOKEN__"
+    private val telegramConfigChatPlaceholder: String = "__CHAT__"
+    private val telegramConfigProjectNamePlaceholder: String = "__NAME__"
+    private val notificationsConfigFolder: String = "./build/allure-notification-config"
+    private val notificationsConfigName: String = "allure_notification_config.json"
 
     init {
         description = "Send report to the Allure Report Server"
@@ -70,12 +75,24 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     abstract val batch: Property<String>
 
     @get:Input
+    @get:Option(option = "send-notification", description = "Sends telegram notification if 'true'")
+    @get:Optional
+    abstract val notificationEnabled: Property<String>
+
+    @get:Input
+    @get:Option(option = "project-name", description = "Name of your project")
+    @get:Optional
+    abstract val projectName: Property<String>
+
+    @get:Input
     @get:Option(option = "telegram-bot-token", description = "Telegram Bot token for sending notification")
+    @get:Optional
     abstract val telegramBotToken: Property<String>
 
     @get:Input
-    @get:Option(option = "telegram-bot-id", description = "Telegram Bot id for sending notification")
-    abstract val telegramBotId: Property<String>
+    @get:Option(option = "telegram-chat-id", description = "Telegram Chat id for sending notification")
+    @get:Optional
+    abstract val telegramChatId: Property<String>
 
 
     @TaskAction
@@ -85,7 +102,19 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         val cookies = loginResponse.cookies
         cleanResults(projectId = projectId.get(), csrf = csrfToken, cookies = cookies)
         sendResults(projectId = projectId.get(), csrf = csrfToken, cookies = cookies)
-        generateReport(projectId = projectId.get(), csrf = csrfToken, cookies = cookies)
+        val reportLink = generateReport(projectId = projectId.get(), csrf = csrfToken, cookies = cookies)
+        if (notificationEnabled.getOrElse("false").toBoolean()) {
+            if (!telegramBotToken.isPresent || !telegramChatId.isPresent) {
+                throw IllegalStateException("Provide full list of telegram credentials")
+            }
+            sendTelegramNotification(
+                projectName = projectName.getOrElse("default"),
+                env = env.get(),
+                reportLink = reportLink,
+                botToken = telegramBotToken.get(),
+                chatId = telegramChatId.get()
+            )
+        }
     }
 
     private fun login(username: String, password: String): Response {
@@ -99,7 +128,7 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     }
 
     private fun cleanResults(projectId: String, csrf: String, cookies: CookieJar) {
-        print("Cleaning results (to avoid merging of current and previous runs)")
+        println("Cleaning results (to avoid merging of current and previous runs)")
         val response = get(
             url = "${url.get()}/allure-docker-service/clean-results",
             headers = mapOf("X-CSRF-TOKEN" to csrf),
@@ -119,12 +148,11 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 params = mapOf("project_id" to projectId),
                 json = it
             )
-            println("RESULT UPLOAD SC: ${response.statusCode}")
             handleError(response)
         }
     }
 
-    private fun generateReport(projectId: String, csrf: String, cookies: CookieJar) {
+    private fun generateReport(projectId: String, csrf: String, cookies: CookieJar): String {
         println("Generating Report")
         val response = get(
             url = "${url.get()}/allure-docker-service/generate-report",
@@ -138,16 +166,49 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             )
         )
         handleError(response)
-        println("REPORT_URL: ${JSONObject(response.text).getJSONObject("data")["report_url"]}")
+        val url = JSONObject(response.text).getJSONObject("data")["report_url"]
+        println("REPORT_URL: $url")
+        return url.toString()
     }
 
-    private fun handleError(response: Response) {
-        if (response.statusCode != HttpStatus.SC_OK) {
-            println("Status code: " + response.statusCode)
-            println("Headers: " + response.headers)
-            println("Response: " + response.text)
-            throw IllegalStateException("Error during report sending")
+    private fun sendTelegramNotification(
+        env: String,
+        reportLink: String,
+        botToken: String,
+        chatId: String,
+        projectName: String
+    ) {
+        println("Sending Telegram notification")
+        val configPath = getNotificationConfig(projectName = projectName, chatId = chatId, botToken = botToken)
+        System.setProperty("projectName", projectName)
+        System.setProperty("env", env)
+        System.setProperty("config.file", configPath)
+        System.setProperty("reportLink", "$reportLink //")
+        guru.qa.allure.notifications.Application.main(arrayOf(""))
+    }
+
+    private fun getNotificationConfig(botToken: String, chatId: String, projectName: String): String {
+        val config = File("$notificationsConfigFolder/$notificationsConfigName")
+        val text = Thread.currentThread().contextClassLoader.getResource(notificationsConfigName)!!.readText()
+        if(File(notificationsConfigFolder).exists()) File(notificationsConfigFolder).deleteRecursively()
+        if (!File(notificationsConfigFolder).mkdir()) {
+            throw IllegalStateException("Unable to crate folder for Allure Notification config")
         }
+        if (config.createNewFile()) {
+            config.writeText(text)
+            updateJsonConfig(file = config, botToken = botToken, chatId = chatId, projectName = projectName)
+        } else {
+            throw IllegalStateException("Unable to copy Allure Notification config")
+        }
+        return "$notificationsConfigFolder/$notificationsConfigName"
+    }
+
+    private fun updateJsonConfig(file: File, botToken: String, chatId: String, projectName: String) {
+        var text = file.readText()
+        text = text.replace(telegramConfigTokenPlaceholder, botToken)
+            .replace(telegramConfigChatPlaceholder, chatId)
+            .replace(telegramConfigProjectNamePlaceholder, projectName)
+        file.writeText(text)
     }
 
     private fun getChunkedFileJSONs(): List<JSONObject> {
@@ -156,7 +217,7 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             .drop(1)
             .map { it.fileLike() }
             .chunked(batch.getOrElse(defaultBatchSize).toInt())
-        val resultsList = ArrayList<JSONObject>();
+        val resultsList = ArrayList<JSONObject>()
         chunksOfFiles.forEach { it ->
             val array = JSONArray()
             it.forEach {
@@ -172,5 +233,14 @@ abstract class ReportToAllureServerTask : DefaultTask() {
 
     private fun convertToBase64(attachment: ByteArray): String {
         return Base64.getEncoder().encodeToString(attachment)
+    }
+
+    private fun handleError(response: Response) {
+        if (response.statusCode != HttpStatus.SC_OK) {
+            println("Status code: " + response.statusCode)
+            println("Headers: " + response.headers)
+            println("Response: " + response.text)
+            throw IllegalStateException("Error during report sending")
+        }
     }
 }

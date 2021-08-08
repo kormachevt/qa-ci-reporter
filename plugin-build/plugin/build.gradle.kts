@@ -10,6 +10,7 @@ dependencies {
     implementation("org.openmbee.testrail:testrail-cli:1.1.2")
     implementation("com.lordcodes.turtle:turtle:0.5.0")
     implementation("com.github.jkcclemens:khttp:0.1.0")
+    implementation("guru.qa.allure:notifications:3.1.1")
 
     testImplementation(TestingLib.JUNIT)
 }
