@@ -8,6 +8,7 @@ plugins {
 }
 
 dependencies {
+    implementation("com.github.kormachevt:test-ci-reporter:0.1.0")
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
     implementation("com.github.jkcclemens:khttp:0.1.0")
