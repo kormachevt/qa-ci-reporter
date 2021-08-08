@@ -1,7 +1,6 @@
-import org.jetbrains.kotlin.gradle.targets.js.npm.includedRange
-
 plugins {
     kotlin("jvm")
+    id("maven-publish")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish")
     id ("com.github.johnrengelman.shadow") version ("7.0.0")
