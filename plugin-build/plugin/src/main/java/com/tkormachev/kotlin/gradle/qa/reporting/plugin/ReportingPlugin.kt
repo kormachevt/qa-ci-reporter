@@ -1,4 +1,4 @@
-package com.tkormachev.kotlin.gradle.test.reporting.plugin
+package com.tkormachev.kotlin.gradle.qa.reporting.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

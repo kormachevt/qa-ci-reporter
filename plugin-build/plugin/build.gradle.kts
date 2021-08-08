@@ -17,10 +17,7 @@ dependencies {
 
 repositories {
     flatDir {
-        dirs("./src/main/java/com/tkormachev/kotlin/gradle/test/reporting/plugin/lib")
-    }
-    maven {
-        setUrl("https://jitpack.io")
+        dirs("./src/main/java/com/tkormachev/kotlin/gradle/qa/reporting/plugin/lib")
     }
 }
 

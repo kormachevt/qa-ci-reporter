@@ -1,8 +1,8 @@
 object PluginCoordinates {
-    const val ID = "com.tkormachev.kotlin.gradle.test.reporting.plugin"
-    const val GROUP = "com.tkormachev.kotlin.gradle.test"
+    const val ID = "com.tkormachev.kotlin.gradle.qa.reporting.plugin"
+    const val GROUP = "com.tkormachev.kotlin.gradle.qa"
     const val VERSION = "0.1.0"
-    const val IMPLEMENTATION_CLASS = "com.tkormachev.kotlin.gradle.test.reporting.plugin.ReportingPlugin"
+    const val IMPLEMENTATION_CLASS = "com.tkormachev.kotlin.gradle.qa.reporting.plugin.ReportingPlugin"
 }
 
 object PluginBundle {

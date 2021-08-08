@@ -1,5 +1,5 @@
 plugins {
     java
-    id("com.tkormachev.kotlin.gradle.test.reporting.plugin")
+    id("com.tkormachev.kotlin.gradle.qa.reporting.plugin")
 
 }

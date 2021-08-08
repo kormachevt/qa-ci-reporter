@@ -1,6 +1,5 @@
-package com.tkormachev.kotlin.gradle.test.reporting.plugin
+package com.tkormachev.kotlin.gradle.qa.reporting.plugin
 
-import khttp.extensions.fileLike
 import khttp.get
 import khttp.post
 import khttp.responses.Response
@@ -13,20 +12,10 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
-
 
 abstract class ReportToAllureServerTask : DefaultTask() {
     private val defaultBatchSize: String = "300"
-    private val telegramConfigTokenPlaceholder: String = "__TOKEN__"
-    private val telegramConfigChatPlaceholder: String = "__CHAT__"
-    private val telegramConfigProjectNamePlaceholder: String = "__NAME__"
-    private val notificationsConfigFolder: String = "./build/allure-notification-config"
-    private val notificationsConfigName: String = "allure_notification_config.json"
 
     init {
         description = "Send report to the Allure Report Server"
@@ -94,7 +83,6 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     @get:Optional
     abstract val telegramChatId: Property<String>
 
-
     @TaskAction
     fun publish() {
         val loginResponse = login(username.get(), password.get())
@@ -140,7 +128,10 @@ abstract class ReportToAllureServerTask : DefaultTask() {
 
     private fun sendResults(projectId: String, csrf: String, cookies: CookieJar) {
         println("Sending results")
-        getChunkedFileJSONs().forEach {
+        getChunkedFileJSONs(
+            resultsDir = resultsDir.get(),
+            batch = batch.getOrElse(defaultBatchSize).toInt()
+        ).forEach {
             val response = post(
                 url = "${url.get()}/allure-docker-service/send-results",
                 headers = mapOf("X-CSRF-TOKEN" to csrf),
@@ -185,54 +176,6 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         System.setProperty("config.file", configPath)
         System.setProperty("reportLink", "$reportLink //")
         guru.qa.allure.notifications.Application.main(arrayOf(""))
-    }
-
-    private fun getNotificationConfig(botToken: String, chatId: String, projectName: String): String {
-        val config = File("$notificationsConfigFolder/$notificationsConfigName")
-        val text = Thread.currentThread().contextClassLoader.getResource(notificationsConfigName)!!.readText()
-        if(File(notificationsConfigFolder).exists()) File(notificationsConfigFolder).deleteRecursively()
-        if (!File(notificationsConfigFolder).mkdir()) {
-            throw IllegalStateException("Unable to crate folder for Allure Notification config")
-        }
-        if (config.createNewFile()) {
-            config.writeText(text)
-            updateJsonConfig(file = config, botToken = botToken, chatId = chatId, projectName = projectName)
-        } else {
-            throw IllegalStateException("Unable to copy Allure Notification config")
-        }
-        return "$notificationsConfigFolder/$notificationsConfigName"
-    }
-
-    private fun updateJsonConfig(file: File, botToken: String, chatId: String, projectName: String) {
-        var text = file.readText()
-        text = text.replace(telegramConfigTokenPlaceholder, botToken)
-            .replace(telegramConfigChatPlaceholder, chatId)
-            .replace(telegramConfigProjectNamePlaceholder, projectName)
-        file.writeText(text)
-    }
-
-    private fun getChunkedFileJSONs(): List<JSONObject> {
-        val chunksOfFiles = File(resultsDir.get()).walk()
-            .toList()
-            .drop(1)
-            .map { it.fileLike() }
-            .chunked(batch.getOrElse(defaultBatchSize).toInt())
-        val resultsList = ArrayList<JSONObject>()
-        chunksOfFiles.forEach { it ->
-            val array = JSONArray()
-            it.forEach {
-                val item = JSONObject()
-                item.put("file_name", it.name)
-                item.put("content_base64", convertToBase64(it.contents))
-                array.put(item)
-            }
-            resultsList.add(JSONObject().put("results", array))
-        }
-        return resultsList
-    }
-
-    private fun convertToBase64(attachment: ByteArray): String {
-        return Base64.getEncoder().encodeToString(attachment)
     }
 
     private fun handleError(response: Response) {
