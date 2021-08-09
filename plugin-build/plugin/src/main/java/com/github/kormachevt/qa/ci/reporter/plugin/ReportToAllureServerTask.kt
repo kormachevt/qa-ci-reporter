@@ -1,10 +1,9 @@
-package com.tkormachev.kotlin.gradle.qa.reporting.plugin
+package com.github.kormachevt.qa.ci.reporter.plugin
 
 import khttp.get
 import khttp.post
 import khttp.responses.Response
 import khttp.structures.cookie.CookieJar
-import org.apache.http.HttpStatus
 import org.gradle.api.DefaultTask
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.provider.Property
@@ -12,6 +11,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
+import org.gradle.internal.impldep.org.apache.http.HttpStatus
 import org.json.JSONObject
 
 abstract class ReportToAllureServerTask : DefaultTask() {

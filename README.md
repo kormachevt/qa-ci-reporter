@@ -1,4 +1,4 @@
-# kotlin-gradle-test-results-reporting-plugin 🐘
+# qa-ci-reporter 🐘
 
 This is a wrapper plugin that provides possibility to upload test results to different reporting systems.
 
@@ -8,11 +8,11 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 - Upload JUnit results to the [TestRail](https://www.gurock.com/testrail/)
 
 ## How to use 👣
-####1. Modify your build.gradle
+#### 1. Modify your build.gradle
 ```
 plugins {
     ...
-    id("com.tkormachev.kotlin.gradle.qa.reporting.plugin")
+    id("com.github.kormachevt.qa.ci.reporter.plugin")
 }
 ```
 #### 2. You want to upload allure results to the Allure Docker Service

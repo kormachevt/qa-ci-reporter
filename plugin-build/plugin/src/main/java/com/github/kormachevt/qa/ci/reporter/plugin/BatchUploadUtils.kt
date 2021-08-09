@@ -1,4 +1,4 @@
-package com.tkormachev.kotlin.gradle.qa.reporting.plugin
+package com.github.kormachevt.qa.ci.reporter.plugin
 
 import khttp.extensions.fileLike
 import org.json.JSONArray

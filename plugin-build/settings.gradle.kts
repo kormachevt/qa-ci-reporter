@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = ("com.tkormachev.kotlin.gradle.qa.reporting.plugin")
+rootProject.name = ("com.github.kormachevt.qa.ci.reporter.plugin")
 
 include(":plugin")
