@@ -3,7 +3,13 @@ plugins {
     id("maven-publish")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish")
-    id ("com.github.johnrengelman.shadow") version ("7.0.0")
+    id("com.github.johnrengelman.shadow") version ("7.0.0")
+}
+
+repositories {
+    flatDir {
+        dir("./src/main/java/com/github/kormachevt/qa/ci/reporter/plugin/lib")
+    }
 }
 
 dependencies {
@@ -11,7 +17,8 @@ dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
     implementation("com.github.jkcclemens:khttp:0.1.0")
-    compile(fileTree("./src/main/java/com/tkormachev/kotlin/gradle/qa/reporting/plugin/lib") { include("*.jar") })
+    implementation("org.openmbee.testrail:testrail-cli:1.1.2")
+    implementation("guru.qa.allure:notifications:3.1.1")
     testImplementation(TestingLib.JUNIT)
 }
 

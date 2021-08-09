@@ -1,4 +1,4 @@
-package com.tkormachev.kotlin.gradle.qa.reporting.plugin
+package com.github.kormachevt.qa.ci.reporter.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.plugins.BasePlugin
