@@ -15,6 +15,9 @@ allprojects {
         maven{
             url = uri("https://jitpack.io")
         }
+        flatDir {
+            dir("./plugin-build/plugin/src/main/java/com/github/kormachevt/qa/ci/reporter/plugin/lib")
+        }
     }
 }
 
