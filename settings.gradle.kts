@@ -2,13 +2,13 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        jcenter()
         maven {
             setUrl("https://jitpack.io")
         }
         flatDir {
             dir("./plugin-build/plugin/src/main/java/com/github/kormachevt/qa/ci/reporter/plugin/lib")
         }
+        jcenter()
     }
 }
 
