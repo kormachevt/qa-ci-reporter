@@ -8,13 +8,30 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 - Upload JUnit results to the [TestRail](https://www.gurock.com/testrail/)
 
 ## How to use 👣
-#### 1. Modify your build.gradle
+#### 1. Import the plugin
+* build.gradle
 ```
 plugins {
     ...
-    id("com.github.kormachevt.qa.ci.reporter.plugin")
+    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.4"
 }
 ```
+
+* make sure to add these repoitories to the settings.gradle
+```
+pluginManagement {
+    repositories {
+        ...
+        gradlePluginPortal()
+        mavenCentral()
+        maven {
+            setUrl("https://jitpack.io")
+        }
+    }
+}
+```
+
+
 #### 2. You want to upload allure results to the Allure Docker Service
 * Maybe You also want to send telegram notification with report summary
 ```
