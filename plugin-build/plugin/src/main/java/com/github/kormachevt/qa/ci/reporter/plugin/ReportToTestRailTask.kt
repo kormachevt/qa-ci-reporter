@@ -37,7 +37,7 @@ abstract class ReportToTestRailTask : DefaultTask() {
 
     @get:Input
     @get:Option(option = "suite-id", description = "suite-id")
-    abstract val suiteId: Property<Int>
+    abstract val suiteId: Property<String>
 
     @get:Input
     @get:Option(option = "skip-close-run", description = "skip-close-run")
