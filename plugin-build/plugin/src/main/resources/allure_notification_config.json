@@ -12,7 +12,7 @@
       "mattermostUrl": "",
       "chart": true,
       "chartName": "",
-      "project": "__NAME__"
+      "project": "__NAME__ (__TRIGGER__)"
     },
     "mail": {
       "host": "",
