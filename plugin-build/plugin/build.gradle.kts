@@ -22,7 +22,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
-    implementation("com.github.jkcclemens:khttp:0.1.0")
+    implementation("com.github.jkcclemens:khttp:0.1.1")
     "provided"(fileTree("./src/main/java/com/github/kormachevt/qa/ci/reporter/plugin/lib") { include("*.jar") })
     testImplementation(TestingLib.JUNIT)
 }
