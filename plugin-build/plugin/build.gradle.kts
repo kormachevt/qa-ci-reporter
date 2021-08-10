@@ -32,6 +32,7 @@ val jar by tasks.getting(Jar::class) {
     from(sourceSets.main.get().output) {
         include("**/ReportingPlugin.class")
     }
+    dependsOn(configurations.runtimeClasspath)
     dependsOn(configurations.getByName("provided"))
     from({
         configurations.getByName("provided").filter {
