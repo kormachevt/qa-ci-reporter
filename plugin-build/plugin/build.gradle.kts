@@ -1,8 +1,15 @@
+import org.gradle.jvm.tasks.Jar
+
 plugins {
     kotlin("jvm")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish")
     id("com.github.johnrengelman.shadow") version ("7.0.0")
+}
+
+configurations {
+    create("provided")
+    compile.extendsFrom(configurations.getByName("provided"))
 }
 
 repositories {
@@ -15,9 +22,22 @@ dependencies {
     implementation(kotlin("stdlib-jdk7"))
     implementation(gradleApi())
     implementation("com.github.jkcclemens:khttp:0.1.0")
-    implementation("org.openmbee.testrail:testrail-cli:1.1.2")
-    implementation("guru.qa.allure:notifications:3.1.1")
+    "provided"(fileTree("./src/main/java/com/github/kormachevt/qa/ci/reporter/plugin/lib") { include("*.jar") })
     testImplementation(TestingLib.JUNIT)
+}
+
+val jar by tasks.getting(Jar::class) {
+    manifest { attributes["Main-Class"] = "ReportingPlugin" }
+    from(sourceSets.main.get().output) {
+        include("**/ReportingPlugin.class")
+    }
+    dependsOn(configurations.getByName("provided"))
+    from({
+        configurations.getByName("provided").filter {
+            it.name.endsWith("jar")
+        }.map { zipTree(it) }
+    })
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 java {
