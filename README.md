@@ -17,7 +17,7 @@ plugins {
 }
 ```
 
-* make sure to add these repoitories to the settings.gradle
+* make sure to add these repositories to the settings.gradle
 ```
 pluginManagement {
     repositories {
