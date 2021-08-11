@@ -47,7 +47,7 @@ pluginManagement {
     --trigger="nightly build" \
     --send-notification="true" \
     --telegram-bot-token="1234567890:12345678901234567890123456789012345" \
-    --telegram-chat-id="-123456789" \
+    --telegram-chat-id="-123456789" 
 ```
 * You can disable sending the notification
 ```
@@ -61,7 +61,7 @@ pluginManagement {
     --tags="smoke" \
     --env="test" \
     --trigger="nightly build" \
-    --send-notification="false" \
+    --send-notification="false" 
 ```
 
 list of the optional options:
@@ -76,13 +76,12 @@ list of the optional options:
 
 ```
 ./gradlew publishToTestRail \
-    --results-dir="example/build/allure-results/" \
     --url="https://somecompany.testrail.io/" \
     --login="username" \
     --password="qwerty12345" \
     --env="dev" \
     --title="Automated Tests" \
-    --suite_id=1 \
+    --suite-id="1" \
     --skip-close-run=true
 ```
 list of the optional options:  
