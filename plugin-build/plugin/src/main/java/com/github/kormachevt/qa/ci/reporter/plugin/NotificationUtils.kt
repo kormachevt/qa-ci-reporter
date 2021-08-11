@@ -18,7 +18,13 @@ fun getNotificationConfig(botToken: String, chatId: String, projectName: String,
     }
     if (config.createNewFile()) {
         config.writeText(text)
-        updateJsonConfig(file = config, botToken = botToken, chatId = chatId, projectName = projectName, trigger = trigger)
+        updateJsonConfig(
+            file = config,
+            botToken = botToken,
+            chatId = chatId,
+            projectName = projectName,
+            trigger = trigger
+        )
     } else {
         throw IllegalStateException("Unable to copy Allure Notification config")
     }
