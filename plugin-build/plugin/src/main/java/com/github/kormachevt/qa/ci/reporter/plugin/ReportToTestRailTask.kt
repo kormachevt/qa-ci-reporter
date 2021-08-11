@@ -7,6 +7,8 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.openmbee.testrail.cli.JUnitPublisher
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 abstract class ReportToTestRailTask : DefaultTask() {
 
@@ -47,12 +49,13 @@ abstract class ReportToTestRailTask : DefaultTask() {
     @Suppress("SpreadOperator")
     fun publish() {
         val args = mutableListOf(
-            "-d ./build/test-results/test",
-            "-h $url",
-            "-u $login",
-            "-p $password",
-            "-sid $suiteId",
-            "--run-name \"[${env.get().toUpperCase()}] $title [${java.util.Calendar.getInstance()}]\"",
+            "--directory=./build/test-results/test/",
+            "--host=${url.get()}",
+            "--user=${login.get()}",
+            "--password=${password.get()}",
+            "--suite-id=${suiteId.get()}",
+            "--run-name=[${env.get().toUpperCase()}] ${title.get()} " +
+                "[${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))}]",
         )
         if (skipCloseRun.getOrElse("false").toBoolean()) {
             args.add("--skip-close-run")
