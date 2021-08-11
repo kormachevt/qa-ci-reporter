@@ -22,8 +22,8 @@ abstract class ReportToTestRailTask : DefaultTask() {
     abstract val url: Property<String>
 
     @get:Input
-    @get:Option(option = "login", description = "login")
-    abstract val login: Property<String>
+    @get:Option(option = "username", description = "login")
+    abstract val username: Property<String>
 
     @get:Input
     @get:Option(option = "password", description = "password")
@@ -51,7 +51,7 @@ abstract class ReportToTestRailTask : DefaultTask() {
         val args = mutableListOf(
             "--directory=./build/test-results/test/",
             "--host=${url.get()}",
-            "--user=${login.get()}",
+            "--user=${username.get()}",
             "--password=${password.get()}",
             "--suite-id=${suiteId.get()}",
             "--run-name=[${env.get().toUpperCase()}] ${title.get()} " +

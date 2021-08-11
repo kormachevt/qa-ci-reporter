@@ -13,7 +13,7 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 ```
 plugins {
     ...
-    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.0"
+    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.1"
 }
 ```
 
@@ -77,7 +77,7 @@ list of the optional options:
 ```
 ./gradlew publishToTestRail \
     --url="https://somecompany.testrail.io/" \
-    --login="username" \
+    --username="username" \
     --password="qwerty12345" \
     --env="dev" \
     --title="Automated Tests" \
