@@ -1,7 +1,7 @@
 object PluginCoordinates {
     const val ID = "com.github.kormachevt.qa.ci.reporter.plugin"
     const val GROUP = "com.github.kormachevt"
-    const val VERSION = "0.1.1"
+    const val VERSION = "0.1.2"
     const val IMPLEMENTATION_CLASS = "com.github.kormachevt.qa.ci.reporter.plugin.ReportingPlugin"
 }
 

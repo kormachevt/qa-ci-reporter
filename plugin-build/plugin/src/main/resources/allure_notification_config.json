@@ -11,8 +11,8 @@
       "allureFolder": "build/reports/allure-report/",
       "mattermostUrl": "",
       "chart": true,
-      "chartName": "",
-      "project": "__NAME__ (__TRIGGER__)"
+      "chartName": "__TRIGGER__",
+      "project": "__NAME__"
     },
     "mail": {
       "host": "",
