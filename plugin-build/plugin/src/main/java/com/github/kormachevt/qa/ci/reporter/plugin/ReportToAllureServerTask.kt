@@ -65,7 +65,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     abstract val batch: Property<String>
 
     @get:Input
-    @get:Option(option = "max-file-size", description = "Maximum file size to upload in bytes. Other files will be ignored")
+    @get:Option(option = "max-file-size", description = "Maximum file size to upload in bytes. " +
+            "Other files will be ignored")
     @get:Optional
     abstract val maxFileSize: Property<String>
 

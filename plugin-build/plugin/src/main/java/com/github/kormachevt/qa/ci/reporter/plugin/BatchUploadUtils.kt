@@ -11,7 +11,7 @@ fun getChunkedFileJSONs(resultsDir: String, batch: Int, maxFileSize: Long): List
     val chunksOfFiles = File(resultsDir).walk()
         .toList()
         .drop(1)
-        .filter{it.length() < maxFileSize}
+        .filter { it.length() < maxFileSize }
         .map { it.fileLike() }
         .chunked(batch)
     val resultsList = ArrayList<JSONObject>()
