@@ -13,7 +13,7 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 ```
 plugins {
     ...
-    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.2"
+    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.3"
 }
 ```
 
@@ -67,6 +67,7 @@ pluginManagement {
 list of the optional options:
 1. --trigger (default = "default")
 1. --batch-size (default = "300")
+1. --max-file-size (default = "10485760")
 1. --send-notification (default = "false")
 1. --project-name (default = "default")
 1. --telegram-bot-token (no default value)

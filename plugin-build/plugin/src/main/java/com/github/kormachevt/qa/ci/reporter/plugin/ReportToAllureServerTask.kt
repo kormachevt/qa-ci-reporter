@@ -16,6 +16,7 @@ import org.json.JSONObject
 
 abstract class ReportToAllureServerTask : DefaultTask() {
     private val defaultBatchSize: String = "300"
+    private val defaultMaxFileSize: String = "10485760"
 
     init {
         description = "Send report to the Allure Report Server"
@@ -62,6 +63,11 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     @get:Option(option = "batch-size", description = "Number of files in a batch for upload")
     @get:Optional
     abstract val batch: Property<String>
+
+    @get:Input
+    @get:Option(option = "max-file-size", description = "Maximum file size to upload in bytes. Other files will be ignored")
+    @get:Optional
+    abstract val maxFileSize: Property<String>
 
     @get:Input
     @get:Option(option = "send-notification", description = "Sends telegram notification if 'true'")
@@ -130,7 +136,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         println("Sending results")
         getChunkedFileJSONs(
             resultsDir = resultsDir.get(),
-            batch = batch.getOrElse(defaultBatchSize).toInt()
+            batch = batch.getOrElse(defaultBatchSize).toInt(),
+            maxFileSize = maxFileSize.getOrElse(defaultMaxFileSize).toLong()
         ).forEach {
             val response = post(
                 url = "${url.get()}/allure-docker-service/send-results",

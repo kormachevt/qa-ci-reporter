@@ -7,10 +7,11 @@ import java.io.File
 import java.util.Base64
 import kotlin.collections.ArrayList
 
-fun getChunkedFileJSONs(resultsDir: String, batch: Int): List<JSONObject> {
+fun getChunkedFileJSONs(resultsDir: String, batch: Int, maxFileSize: Long): List<JSONObject> {
     val chunksOfFiles = File(resultsDir).walk()
         .toList()
         .drop(1)
+        .filter{it.length() < maxFileSize}
         .map { it.fileLike() }
         .chunked(batch)
     val resultsList = ArrayList<JSONObject>()
