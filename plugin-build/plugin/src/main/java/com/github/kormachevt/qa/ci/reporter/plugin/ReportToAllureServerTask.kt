@@ -181,10 +181,9 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     ) {
         println("Sending Telegram notification")
         val configPath = getNotificationConfig(
-            projectName = projectName,
+            projectName = if (trigger.isPresent) trigger.get() else projectName,
             chatId = chatId,
             botToken = botToken,
-            trigger = trigger.getOrElse("default")
         )
         System.setProperty("projectName", projectName)
         System.setProperty("env", env)
