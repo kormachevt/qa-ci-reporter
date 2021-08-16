@@ -13,7 +13,7 @@ fun getNotificationConfig(botToken: String, chatId: String, projectName: String)
     val text = Thread.currentThread().contextClassLoader.getResource(CONFIG_NAME)!!.readText()
     if (File(CONFIG_DIR).exists()) File(CONFIG_DIR).deleteRecursively()
     if (!File(CONFIG_DIR).mkdir()) {
-        throw IllegalStateException("Unable to crate folder for Allure Notification config")
+        throw IllegalStateException("Unable to create folder for Allure Notification config")
     }
     if (config.createNewFile()) {
         config.writeText(text)
