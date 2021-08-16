@@ -67,7 +67,8 @@ pluginManagement {
 list of the optional options:
 1. --trigger (default = "default")
 1. --batch-size (default = "300")
-1. --max-file-size (default = "10485760")
+1. --max-file-size (default = "10485760". Maximum file size in Bytes that will be sent to the server. 
+   Helps if You are unable to increase upload body size of Allure Service reverse proxy)
 1. --send-notification (default = "false")
 1. --project-name (default = "default")
 1. --telegram-bot-token (no default value)
