@@ -13,7 +13,7 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 ```
 plugins {
     ...
-    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.6"
+    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.7"
 }
 ```
 
@@ -65,7 +65,6 @@ pluginManagement {
 ```
 
 list of the optional options:
-1. --trigger (default = "default")
 1. --batch-size (default = "300")
 1. --max-file-size (default = "10485760". Maximum file size in Bytes that will be sent to the server. 
    Helps if You are unable to increase upload body size of Allure Service reverse proxy)
@@ -73,6 +72,7 @@ list of the optional options:
 1. --project-name (default = "default")
 1. --telegram-bot-token (no default value)
 1. --telegram-chat-id (no default value)
+1. --trigger (no default value. Any reason to trigger a test run. It will be displayed above the chart instead of the Project Name if provided)
 
 #### 3. You want to upload JUnit results to the TestRail
 
