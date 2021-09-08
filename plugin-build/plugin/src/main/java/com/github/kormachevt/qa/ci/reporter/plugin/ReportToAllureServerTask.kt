@@ -188,7 +188,7 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         System.setProperty("projectName", projectName)
         System.setProperty("env", env)
         System.setProperty("config.file", configPath)
-        System.setProperty("reportLink", "$reportLink //") // https://github.com/qa-guru/allure-notifications/issues/61
+        System.setProperty("reportLink", "$reportLink //")
         guru.qa.allure.notifications.Application.main(arrayOf(""))
     }
 
