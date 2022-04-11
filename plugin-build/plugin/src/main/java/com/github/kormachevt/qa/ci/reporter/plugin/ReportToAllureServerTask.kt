@@ -17,7 +17,6 @@ import org.json.JSONObject
 abstract class ReportToAllureServerTask : DefaultTask() {
     private val defaultBatchSize: String = "300"
     private val defaultMaxFileSize: String = "10485760"
-    private val requestTimeout: Double = 120.0
 
     init {
         description = "Send report to the Allure Report Server"
@@ -110,7 +109,6 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 throw IllegalStateException("Provide full list of telegram credentials")
             }
             sendTelegramNotification(
-                allureReportDir = allureDir.get(),
                 projectName = projectName.getOrElse("default"),
                 env = "${env.get()}\n <b>Tags:</b> ${tags.get()}",
                 reportLink = reportLink,
@@ -187,12 +185,11 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         reportLink: String,
         botToken: String,
         chatId: String,
-        allureReportDir: String,
         projectName: String
     ) {
         println("Sending Telegram notification")
         val configPath = getNotificationConfig(
-            allureReportDir = allureReportDir,
+            allureReportDir = allureDir.get(),
             projectName = if (trigger.isPresent) trigger.get() else projectName,
             chatId = chatId,
             botToken = botToken,
@@ -211,5 +208,9 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             println("Response: " + response.text)
             throw IllegalStateException("Error during report sending")
         }
+    }
+
+    companion object {
+        private const val requestTimeout: Double = 120.0
     }
 }

@@ -31,7 +31,13 @@ fun getNotificationConfig(botToken: String, chatId: String, allureReportDir: Str
     return "$CONFIG_DIR/$CONFIG_NAME"
 }
 
-private fun updateJsonConfig(file: File, botToken: String, chatId: String, allureReportDir: String, projectName: String) {
+private fun updateJsonConfig(
+    file: File,
+    botToken: String,
+    chatId: String,
+    allureReportDir: String,
+    projectName: String
+) {
     var text = file.readText()
     text = text.replace(CONFIG_TOKEN_PLACEHOLDER, botToken)
         .replace(CONFIG_CHAT_PLACEHOLDER, chatId)
