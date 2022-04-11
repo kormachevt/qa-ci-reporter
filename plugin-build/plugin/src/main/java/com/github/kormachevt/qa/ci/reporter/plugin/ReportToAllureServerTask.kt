@@ -17,6 +17,7 @@ import org.json.JSONObject
 abstract class ReportToAllureServerTask : DefaultTask() {
     private val defaultBatchSize: String = "300"
     private val defaultMaxFileSize: String = "10485760"
+    private val requestTimeout: Double = 120.0
 
     init {
         description = "Send report to the Allure Report Server"
@@ -123,7 +124,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         println("Logging in to Allure Server as $username")
         val response = post(
             url = "${url.get()}/allure-docker-service/login",
-            json = JSONObject(mapOf("username" to username, "password" to password))
+            json = JSONObject(mapOf("username" to username, "password" to password)),
+            timeout = requestTimeout
         )
         handleError(response)
         return response
@@ -135,7 +137,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             url = "${url.get()}/allure-docker-service/clean-results",
             headers = mapOf("X-CSRF-TOKEN" to csrf),
             cookies = cookies,
-            params = mapOf("project_id" to projectId)
+            params = mapOf("project_id" to projectId),
+            timeout = requestTimeout
         )
         handleError(response)
     }
@@ -152,7 +155,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 headers = mapOf("X-CSRF-TOKEN" to csrf),
                 cookies = cookies,
                 params = mapOf("project_id" to projectId),
-                json = it
+                json = it,
+                timeout = requestTimeout
             )
             handleError(response)
         }
@@ -169,7 +173,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 "execution_name" to "${env.get()}::${tags.get()}::${trigger.getOrElse("default")}",
                 "execution_from" to env.get(),
                 "execution_type" to tags.get()
-            )
+            ),
+            timeout = requestTimeout
         )
         handleError(response)
         val url = JSONObject(response.text).getJSONObject("data")["report_url"]
