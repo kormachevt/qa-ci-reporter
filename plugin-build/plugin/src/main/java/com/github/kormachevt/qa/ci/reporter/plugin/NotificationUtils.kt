@@ -4,11 +4,12 @@ import java.io.File
 
 private const val CONFIG_TOKEN_PLACEHOLDER: String = "__TOKEN__"
 private const val CONFIG_CHAT_PLACEHOLDER: String = "__CHAT__"
+private const val ALLURE_FOLDER_PLACEHOLDER: String = "__ALLURE__"
 private const val PROJECT_NAME_PLACEHOLDER: String = "__NAME__"
 private const val CONFIG_DIR: String = "./build/allure-notification-config"
 private const val CONFIG_NAME: String = "allure_notification_config.json"
 
-fun getNotificationConfig(botToken: String, chatId: String, projectName: String): String {
+fun getNotificationConfig(botToken: String, chatId: String, allureReportDir: String, projectName: String): String {
     val config = File("$CONFIG_DIR/$CONFIG_NAME")
     val text = Thread.currentThread().contextClassLoader.getResource(CONFIG_NAME)!!.readText()
     if (File(CONFIG_DIR).exists()) File(CONFIG_DIR).deleteRecursively()
@@ -21,6 +22,7 @@ fun getNotificationConfig(botToken: String, chatId: String, projectName: String)
             file = config,
             botToken = botToken,
             chatId = chatId,
+            allureReportDir = allureReportDir,
             projectName = projectName
         )
     } else {
@@ -29,10 +31,11 @@ fun getNotificationConfig(botToken: String, chatId: String, projectName: String)
     return "$CONFIG_DIR/$CONFIG_NAME"
 }
 
-private fun updateJsonConfig(file: File, botToken: String, chatId: String, projectName: String) {
+private fun updateJsonConfig(file: File, botToken: String, chatId: String, allureReportDir: String, projectName: String) {
     var text = file.readText()
     text = text.replace(CONFIG_TOKEN_PLACEHOLDER, botToken)
         .replace(CONFIG_CHAT_PLACEHOLDER, chatId)
+        .replace(ALLURE_FOLDER_PLACEHOLDER, allureReportDir)
         .replace(PROJECT_NAME_PLACEHOLDER, projectName)
     file.writeText(text)
 }

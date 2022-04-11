@@ -28,6 +28,10 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     abstract val resultsDir: Property<String>
 
     @get:Input
+    @get:Option(option = "allure-dir", description = "Folder with allure report. Usually called 'allure-report'")
+    abstract val allureDir: Property<String>
+
+    @get:Input
     @get:Option(option = "url", description = "url is where the Allure Server is deployed")
     abstract val url: Property<String>
 
@@ -105,6 +109,7 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 throw IllegalStateException("Provide full list of telegram credentials")
             }
             sendTelegramNotification(
+                allureReportDir = allureDir.get(),
                 projectName = projectName.getOrElse("default"),
                 env = "${env.get()}\n <b>Tags:</b> ${tags.get()}",
                 reportLink = reportLink,
@@ -177,10 +182,12 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         reportLink: String,
         botToken: String,
         chatId: String,
+        allureReportDir: String,
         projectName: String
     ) {
         println("Sending Telegram notification")
         val configPath = getNotificationConfig(
+            allureReportDir = allureReportDir,
             projectName = if (trigger.isPresent) trigger.get() else projectName,
             chatId = chatId,
             botToken = botToken,
