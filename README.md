@@ -13,7 +13,7 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 ```
 plugins {
     ...
-    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.8"
+    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.2.0"
 }
 ```
 
