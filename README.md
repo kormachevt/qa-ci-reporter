@@ -13,7 +13,7 @@ This is a wrapper plugin that provides possibility to upload test results to dif
 ```
 plugins {
     ...
-    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.1.7"
+    id "com.github.kormachevt.qa.ci.reporter.plugin" version "0.2.0"
 }
 ```
 
@@ -37,6 +37,7 @@ pluginManagement {
 ```
 ./gradlew publishToAllure \
     --results-dir="build/allure-results/" \
+    --allure-dir="build/reports/allure-report/allureReport/" \
     --url="https://allure.somecompany.com/allure-api" \
     --project-id="local" \
     --username="admin" \
@@ -53,6 +54,7 @@ pluginManagement {
 ```
 ./gradlew publishToAllure \
     --results-dir="build/allure-results/" \
+    --allure-dir="build/reports/allure-report/allureReport/" \
     --url="https://allure.somecompany.com/allure-api" \
     --project-id="local" \
     --username="admin" \

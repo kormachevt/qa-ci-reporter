@@ -28,6 +28,10 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     abstract val resultsDir: Property<String>
 
     @get:Input
+    @get:Option(option = "allure-dir", description = "Folder with allure report. Usually called 'allure-report'")
+    abstract val allureDir: Property<String>
+
+    @get:Input
     @get:Option(option = "url", description = "url is where the Allure Server is deployed")
     abstract val url: Property<String>
 
@@ -118,7 +122,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
         println("Logging in to Allure Server as $username")
         val response = post(
             url = "${url.get()}/allure-docker-service/login",
-            json = JSONObject(mapOf("username" to username, "password" to password))
+            json = JSONObject(mapOf("username" to username, "password" to password)),
+            timeout = requestTimeout
         )
         handleError(response)
         return response
@@ -130,7 +135,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             url = "${url.get()}/allure-docker-service/clean-results",
             headers = mapOf("X-CSRF-TOKEN" to csrf),
             cookies = cookies,
-            params = mapOf("project_id" to projectId)
+            params = mapOf("project_id" to projectId),
+            timeout = requestTimeout
         )
         handleError(response)
     }
@@ -147,7 +153,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 headers = mapOf("X-CSRF-TOKEN" to csrf),
                 cookies = cookies,
                 params = mapOf("project_id" to projectId),
-                json = it
+                json = it,
+                timeout = requestTimeout
             )
             handleError(response)
         }
@@ -164,7 +171,8 @@ abstract class ReportToAllureServerTask : DefaultTask() {
                 "execution_name" to "${env.get()}::${tags.get()}::${trigger.getOrElse("default")}",
                 "execution_from" to env.get(),
                 "execution_type" to tags.get()
-            )
+            ),
+            timeout = requestTimeout
         )
         handleError(response)
         val url = JSONObject(response.text).getJSONObject("data")["report_url"]
@@ -181,6 +189,7 @@ abstract class ReportToAllureServerTask : DefaultTask() {
     ) {
         println("Sending Telegram notification")
         val configPath = getNotificationConfig(
+            allureReportDir = allureDir.get(),
             projectName = if (trigger.isPresent) trigger.get() else projectName,
             chatId = chatId,
             botToken = botToken,
@@ -199,5 +208,9 @@ abstract class ReportToAllureServerTask : DefaultTask() {
             println("Response: " + response.text)
             throw IllegalStateException("Error during report sending")
         }
+    }
+
+    companion object {
+        private const val requestTimeout: Double = 120.0
     }
 }
